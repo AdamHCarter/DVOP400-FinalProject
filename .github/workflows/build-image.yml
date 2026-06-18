@@ -30,6 +30,21 @@ jobs:
     environment:
       name: Production
     needs: test
+    strategy:
+      matrix:
+        include:
+          - name: linux
+            dockerfile: Dockerfile
+            platforms: linux/amd64,linux/arm64,linux/arm/v7
+            tags: |
+              ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:latest
+              ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:${{ github.sha }}-linux
+          - name: windows
+            dockerfile: Dockerfile.windows
+            platforms: windows/amd64
+            tags: |
+              ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:windows-latest
+              ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:${{ github.sha }}-windows
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
@@ -40,14 +55,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: build and push multi-platform image
+      - name: build and push ${{ matrix.name }} image
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          dockerfile: ./${{ matrix.dockerfile }}
+          platforms: ${{ matrix.platforms }}
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:latest
-            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:${{ github.sha }}
+          tags: ${{ matrix.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
