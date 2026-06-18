@@ -39,7 +39,21 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+<<<<<<< HEAD
       - run: docker build -t ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:latest .
         working-directory: .
       - run: docker push ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:latest
         working-directory: .
+=======
+      - name: build and push multi-platform image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64,linux/arm/v7,windows/amd64,macOS/amd64
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:latest
+            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+>>>>>>> f29a3a9286c33d88338bad4e0035c2277765691f
