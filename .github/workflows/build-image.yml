@@ -40,22 +40,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: build and push multi-platform image (linux only)
+      - name: build and push multi-platform image
         uses: docker/build-push-action@v5
         with:
           context: .
-          dockerfile: ./Dockerfile
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:latest
-            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:${{ github.sha }}-linux
+            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      # NOTE: Building Windows container images requires a Windows host
-      # (self-hosted runner or local Docker on Windows). GitHub-hosted
-      # Linux runners cannot build Windows containers natively. To build
-      # the Windows variant, run the following locally on a Windows machine
-      # or provide a self-hosted Windows runner and uncomment/enable a
-      # dedicated Windows job that runs `docker build -f Dockerfile.windows ...`.
