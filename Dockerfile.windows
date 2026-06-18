@@ -1,0 +1,44 @@
+# Build stage
+FROM node:20-windowsservercore AS builder
+
+WORKDIR C:\app
+
+# Copy package files
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY next.config.mjs ./
+
+# Copy source code
+COPY app ./app
+COPY components ./components
+COPY content ./content
+COPY public ./public
+
+# Install dependencies and build
+RUN npm install
+RUN npm run build
+
+# Serve stage
+FROM mcr.microsoft.com/windows/nanoserver:ltsc2022
+
+# Install IIS and required Windows Features
+RUN powershell -Command `
+Add-WindowsFeature Web-Server, Web-Static-Content, Web-Default-Doc, Web-Scripting-Tools, Web-Request-Monitor; `
+Remove-Item -Path 'C:\inetpub\wwwroot\*' -Recurse -Force
+
+# Copy IIS configuration
+COPY windows-iis-config.ps1 C:\
+  RUN powershell -Command C:\windows-iis-config.ps1
+
+# Copy built static files from builder stage
+COPY --from=builder C:\app\out C:\inetpub\wwwroot
+
+# Expose port
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 `
+CMD powershell -Command try { iwr http://localhost/index.html -UseBasicParsing | Out-Null; Write-Host 'OK'; exit 0 } catch { exit 1 }
+
+# Start IIS
+CMD ["powershell", "-Command", "net start w3svc; Wait-Event -Timeout (365*24*60*60) -SourceIdentifier 'IIS'"]

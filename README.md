@@ -42,7 +42,11 @@ Personal website for Adam Carter built with Next.js as a static, front-end-only 
 
 ## Docker
 
-Build and run the static site in a container:
+The site is available as both Linux and Windows container images, built and pushed to Docker Hub automatically by GitHub Actions.
+
+### Linux Images (Recommended)
+
+Works on Docker Desktop (Windows, macOS) and Linux servers:
 
 1. Build the Docker image locally:
 
@@ -64,13 +68,46 @@ Build and run the static site in a container:
 
    The site will be available at `http://localhost:3000`.
 
+### Windows Images
+
+For native Windows containers (Windows Server 2022+):
+
+1. Build the Windows image locally (requires Docker on Windows):
+
+   ```bash
+   docker build -f Dockerfile.windows -t dvop400-finalproject:windows .
+   ```
+
+2. Run the Windows container:
+
+   ```bash
+   docker run -p 8080:80 dvop400-finalproject:windows
+   ```
+
+3. Or pull from Docker Hub:
+
+   ```bash
+   docker run -p 8080:80 yourusername/dvop400-finalproject:windows-latest
+   ```
+
+   The site will be available at `http://localhost:8080`.
+
+### CI/CD
+
+GitHub Actions automatically builds and pushes both image variants:
+
+- **Linux images** (default): `latest`, `<commit-sha>-linux` — for all platforms via Docker Desktop or Linux
+- **Windows images**: `windows-latest`, `<commit-sha>-windows` — for native Windows containers
+
+Both variants are configured with proper routing, caching, and security headers.
+
 ## Project Notes
 
 - Shared personal content lives in `content/site.ts`.
 - The logo and portrait are stored in `public/media/`.
 - The site is configured for static export through `next.config.mjs`.
 - Tests run with Vitest through `npm test` and are suitable for GitHub Actions.
-- Docker image uses a multi-stage build with `node:20-alpine` for building and `nginx:alpine` for serving, keeping the final image lightweight and secure.
+- Docker images available in both Linux (nginx/alpine) and Windows (IIS/nanoserver) variants, automatically built for amd64, arm64, and arm/v7 architectures on Linux.
 
 ## Media
 
