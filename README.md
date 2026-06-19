@@ -68,30 +68,6 @@ Works on Docker Desktop (Windows, macOS) and Linux servers:
 
    The site will be available at `http://localhost:3000`.
 
-### Windows Images
-
-For native Windows containers (Windows Server 2022+):
-
-1. Build the Windows image locally (requires Docker on Windows):
-
-   ```bash
-   docker build -f Dockerfile.windows -t dvop400-finalproject:windows .
-   ```
-
-2. Run the Windows container:
-
-   ```bash
-   docker run -p 8080:80 dvop400-finalproject:windows
-   ```
-
-3. Or pull from Docker Hub:
-
-   ```bash
-   docker run -p 8080:80 yourusername/dvop400-finalproject:windows-latest
-   ```
-
-   The site will be available at `http://localhost:8080`.
-
 ### CI/CD
 
 GitHub Actions automatically builds and pushes both image variants:
