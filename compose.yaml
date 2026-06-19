@@ -3,8 +3,6 @@ services:
     build:
       context: .
       target: runner
-      platforms:
-        - linux/amd64
       dockerfile: Dockerfile
     ports:
       - "3000:80"
