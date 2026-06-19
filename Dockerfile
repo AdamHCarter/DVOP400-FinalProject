@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN npm install
 RUN npm run build
 
 # Serve stage
-FROM nginx:alpine
+FROM nginx:alpine AS runner
 
 # Remove default nginx config
 RUN rm /etc/nginx/conf.d/default.conf
