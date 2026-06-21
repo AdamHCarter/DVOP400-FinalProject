@@ -26,10 +26,7 @@ jobs:
       - run: npm install
       - run: npm test
   build-image:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     environment:
       name: Production
     needs: test
@@ -52,9 +49,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:${{ matrix.os }}-latest
-            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:${{ matrix.os }}-${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:latest
+            ${{ secrets.DOCKERHUB_USER }}/dvop400-finalproject:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
